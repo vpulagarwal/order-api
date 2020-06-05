@@ -1,0 +1,348 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Orders API
+  license:
+    name: MIT
+servers:
+  - url: http://localhost/api/v1
+paths:
+  /users:
+    post:
+      summary: Create sample users in the system
+      operationId: createUser
+      tags: 
+        - User
+      requestBody:
+        description: User reqest body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Bad Request
+        500:
+          description: Internal Server error
+    get:
+      summary: List all users in system
+      operationId: listUsers
+      tags:
+        - User
+      responses:
+        '200':
+          description: An array of Users
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Users"
+  /orders:
+    post:
+      summary: Create sample orders in the system
+      operationId: createOrder
+      tags: 
+        - Order
+      requestBody:
+        description: Order reqest body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        400:
+          description: Bad Request
+        500:
+          description: Internal Server error
+    get:
+      summary: List all orders in system
+      operationId: listOrders
+      tags:
+        - Order
+      responses:
+        '200':
+          description: An array of orders
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Orders"
+  /orders/{orderId}/comments:
+    post:
+      summary: Create comment on order
+      operationId: createComment
+      tags: 
+        - Comment
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: The id of the order to post the comment
+          schema:
+            type: string
+      requestBody:
+        description: Comment reqest body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        400:
+          description: Bad Request
+        500:
+          description: Internal Server error
+    get:
+      summary: get all comments on an order
+      operationId: listCommentsOnOrder
+      tags:
+        - Comment
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: The id of the order to post the comment
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of comments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comments"
+  /comments/{commentId}/replies:
+    post:
+      summary: Add a reply to the comment
+      operationId: createReply
+      tags: 
+        - Comment
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          description: Id of the comment 
+          schema:
+            type: string
+      requestBody:
+        description: Reply reqest body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reply'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        400:
+          description: Bad Request
+        500:
+          description: Internal Server error
+    get:
+      summary: get all Replies on a comment
+      operationId: list replies
+      tags:
+        - Comment
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          description: The id of the order to post the comment
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of replies
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Replies"
+components:
+  schemas:
+    UserRequest:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+          description: name of the user
+          example: 'Vipul'
+        type:
+          type: string
+          enum: 
+            - Business
+            - Customer
+          description: business user or customer
+          example: 'Business'
+    User:
+      type: object
+      required:
+        - _id
+        - name
+        - type
+      properties:
+        _id:
+          type: string
+          description: unique id of user
+          example: '5eda5dd670506800125a11dd'
+        name:
+          type: string
+          description: name of the user
+          example: 'Vipul'
+        type:
+          type: string
+          enum: 
+            - Business
+            - Customer
+          description: business user or customer
+          example: 'Business'
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
+    OrderRequest:
+      type: object
+      required:
+        - products
+        - customerId
+        - refNumber
+      properties:
+        refNumber:
+          type: integer
+          description: unique ref number of order
+          example: 1234565
+        products:
+          type: array
+          items:
+            type: string
+            description: product names
+            example: Zara Tshirt
+        customerId:
+          type: string
+          description: unique id of the customer
+          example: asd23-asd-zc234sz-sada
+    Order:
+      type: object
+      required:
+        - _id
+        - products
+        - customerId
+        - refNumber
+        - comments
+      properties:
+        _id:
+          type: string
+          description: unique id of order
+          example: '5eda5dd670506800125a11dd'
+        refNumber:
+          type: integer
+          description: unique ref number of order
+          example: 1234565
+        products:
+          type: array
+          items:
+            type: string
+            description: product names
+            example: Zara Tshirt
+        customerId:
+          type: string
+          description: unique id of the customer who purchased products
+          example: '5eda5dd670506800125a11dd'
+        comments:
+          type: array
+          items:
+            type: string
+            description: id of the comments
+            example:  ['5eda5dd670506800125a11dd', '5eda5dd670506800125a11' ]
+    Orders:
+      type: array
+      items:
+        $ref: "#/components/schemas/Order"
+    CommentRequest:
+      type: object
+      required:
+        - text
+        - author
+      properties:
+        text:
+          type: string
+          description: text of the comment
+          example: this is one comment
+        author:
+          type: string
+          description: unique id of author (business user)
+          example: 'a5eda5dd670506800125a11dd'
+    Comment:
+      type: object
+      required:
+        - _id
+        - text
+        - author
+        - replies
+      properties:
+        _id:
+          type: string
+          description: unique id of comment
+          example: asd23-asd-zc234sz-sada
+        text:
+          type: string
+          description: text of the comment
+          example: this is one comment
+        author:
+          type: string
+          description: unique id of order
+          example: asd23-asd-zc234sz-sada
+        replies:
+          type: array
+          items:
+            type: object
+            required: 
+              - text
+              - postedBy
+            properties:
+              text:
+                type: string
+              postedBy:
+                type: string
+            description: id of the comments
+            example: {"text": "This is one reply", "postedBy": "author-id"}
+    Comments:
+      type: array
+      items:
+        $ref: "#/components/schemas/Comment"
+    Reply:
+      type: object
+      required: 
+        - text
+        - postedBy
+      properties:
+        text:
+          type: string
+          description: Reply of the user
+        postedBy:
+          type: string
+          description: ID of the user replying to comment
+    Replies:
+      type: array
+      items:
+        $ref: "#/components/schemas/Reply"
